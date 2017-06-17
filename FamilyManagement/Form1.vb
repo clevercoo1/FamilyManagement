@@ -2,6 +2,7 @@
 
 Public Class Form1
 #Region "Test"
+    Dim WithEvents MyHook As New SystemHook()
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
         Dim cn As New NpgsqlConnection
@@ -24,7 +25,41 @@ Public Class Form1
         End Try
     End Sub
 
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+        Dim A As Char = "hello"
+        MsgBox(A)
 
+    End Sub
+
+    Private Sub hwnd_MouseHover(sender As Object, e As EventArgs) Handles hwnd.MouseHover
+        Try
+            MyHook.StartHook(True, True)
+            If MyHook.MouseHookEnabled Then
+                Panel1.Visible = True
+            End If
+        Catch ex As Exception
+
+        End Try
+    End Sub
+
+    Private Sub MyHook_MouseActivity(sender As Object, e As MouseEventArgs) Handles MyHook.MouseActivity
+        Try
+            If e.Button = MouseButtons.Left Or e.Button = MouseButtons.Right Then
+
+
+
+                If PointToClient(MousePosition).X < PointToClient(Panel1.Location).X Or PointToClient(MousePosition).Y < PointToClient(Panel1.Location).Y Then
+
+                    Panel1.Visible = False
+
+                End If
+            End If
+        Catch ex As Exception
+            MsgBox(ex.Message, MsgBoxStyle.Information, Me.Text)
+        Finally
+            MyHook.UnHook()
+        End Try
+    End Sub
 #End Region
 
 End Class
