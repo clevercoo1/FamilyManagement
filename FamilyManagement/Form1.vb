@@ -26,38 +26,55 @@ Public Class Form1
     End Sub
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-        Dim A As Char = "hello"
-        MsgBox(A)
+        If Label1.Text = "启动" Then
+            MyHook.UnHook()
+            Label1.Text = "关闭"
+            Return
+        End If
+        MyHook.StartHook(True, True)
+        If MyHook.MouseHookEnabled Then
+            Label1.Text = "启动"
+        End If
+    End Sub
 
+    Private Sub Form1_MouseClick(sender As Object, e As MouseEventArgs) Handles Me.MouseClick
+        If Panel1.Visible = True Then
+            If e.Button = MouseButtons.Left Or e.Button = MouseButtons.Right Then
+                If Math.Abs(PointToClient(MousePosition).Y) < Panel1.Top Or Math.Abs(PointToClient(MousePosition).X) < Panel1.Left Then
+                    Panel1.Visible = False
+                End If
+                If Math.Abs(PointToClient(MousePosition).Y) > Panel1.Top + Panel1.Size.Height Or Math.Abs(PointToClient(MousePosition).X) > Panel1.Left + +Panel1.Size.Width Then
+                    Panel1.Visible = False
+                End If
+            End If
+        End If
     End Sub
 
     Private Sub hwnd_MouseHover(sender As Object, e As EventArgs) Handles hwnd.MouseHover
         Try
-            MyHook.StartHook(True, True)
-            If MyHook.MouseHookEnabled Then
-                Panel1.Visible = True
-            End If
-        Catch ex As Exception
 
+
+            Panel1.Visible = True
+
+        Catch ex As Exception
+            MsgBox(ex.Message, MsgBoxStyle.Information, Me.Text)
         End Try
     End Sub
 
     Private Sub MyHook_MouseActivity(sender As Object, e As MouseEventArgs) Handles MyHook.MouseActivity
         Try
-            If e.Button = MouseButtons.Left Or e.Button = MouseButtons.Right Then
-
-
-
-                If PointToClient(MousePosition).X < PointToClient(Panel1.Location).X Or PointToClient(MousePosition).Y < PointToClient(Panel1.Location).Y Then
-
-                    Panel1.Visible = False
-
+            If Panel1.Visible = True Then
+                If e.Button = MouseButtons.Left Or e.Button = MouseButtons.Right Then
+                    If Math.Abs(PointToClient(MousePosition).Y) < Panel1.Top Or Math.Abs(PointToClient(MousePosition).X) < Panel1.Left Then
+                        Panel1.Visible = False
+                    End If
+                    If Math.Abs(PointToClient(MousePosition).Y) > Panel1.Top + Panel1.Size.Height Or Math.Abs(PointToClient(MousePosition).X) > Panel1.Left + +Panel1.Size.Width Then
+                        Panel1.Visible = False
+                    End If
                 End If
             End If
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Information, Me.Text)
-        Finally
-            MyHook.UnHook()
         End Try
     End Sub
 #End Region

@@ -247,6 +247,8 @@ Public Class SystemHook
             End If
             '取消或者激活下一个钩子
             If handled Then Return 1 Else Return CallNextHookEx(hKeyboardHook, nCode, wParam, lParam)
+        Else
+            If handled Then Return 1 Else Return CallNextHookEx(hKeyboardHook, nCode, wParam, lParam)
         End If
     End Function
 
